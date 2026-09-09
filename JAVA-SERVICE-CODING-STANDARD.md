@@ -6,7 +6,7 @@ Date: 2026-09-09
 
 Scope: Java REST services exposing service-to-service endpoints, performing relational database CRUD, calling downstream services, and publishing Kafka events.
 
-This standard adapts the structure and engineering intent of `/Users/rage6c/Documents/docs/rest-api-coding-standard/`. The source is C#/.NET; this is a Java-specific standard, not a literal API-name translation. Spring and Kafka mechanics were checked against official documentation linked in the relevant topics.
+This standard is for Java developers building and reviewing Spring Boot services. It defines implementation patterns for REST endpoints, relational persistence, downstream integrations, and Kafka messaging. Official documentation is linked in the relevant topics.
 
 ## Baseline and rule strength
 
@@ -26,21 +26,22 @@ Code blocks are focused excerpts or explicitly labeled pseudocode. Imports and s
 - One local transaction for DB change plus outbox event; asynchronous at-least-once Kafka delivery with stable event IDs.
 - Explicit API/event contracts, centralized problem responses, tracing, operational recovery, and meaningful integration tests.
 
-## Deliberate adaptations from the reference
+## Java technology choices
 
-| Reference approach | Java standard decision |
+| Concern | Standard |
 | --- | --- |
-| EF Core Fluent API with annotation-free entities | Explicit JPA mapping annotations on persistence-only entities; named schema/table and migrations retained |
-| `AsNoTracking` and SQL-translated LINQ | Read-only transactions/projections and database-side repository queries; Java Streams are not a SQL query provider |
-| Request-scoped business services | Stateless Spring singleton beans with transaction-bound persistence contexts |
-| `Task` and `CancellationToken` throughout | Consistent blocking MVC/JPA by default, bounded I/O and explicit cancellation limits |
-| Serilog console and rolling files | SLF4J/Logback; retain rolling-file policy with a documented stdout-only container option |
-| xUnit/Moq and NuGet | JUnit Jupiter/Mockito, real-engine integration tests, Maven/Gradle and JVM dependency scans |
-| Conflicting internal/unversioned API rules | Explicit stable URL major version for independently deployed callers |
-| No new access-control middleware | Explicit service authentication/authorization boundary for the requested exposed endpoints |
-| No dedicated Kafka consistency chapter | Durable outbox, producer acknowledgments, duplicate handling, ordering, quarantine and replay |
+| Persistence | JPA/Hibernate entities with explicit table/schema mapping and versioned migrations |
+| Queries | Spring Data repositories, database-side filtering/projection, and read-only transactions |
+| Dependency injection | Constructor injection and stateless Spring singleton beans |
+| Execution model | Blocking Spring MVC/JPA with bounded I/O and explicit timeout/cancellation handling |
+| Logging | SLF4J/Logback with central collection and deployment-appropriate appenders |
+| Testing | JUnit Jupiter/Mockito and integration tests against the production database engine and Kafka |
+| Build and dependencies | Maven or Gradle, managed versions, static analysis, and JVM dependency scans |
+| API contracts | Explicit URL major versions for independently deployed callers |
+| Security | Service authentication, scope checks, and resource/tenant authorization |
+| Messaging | Transactional outbox, acknowledged publication, duplicate handling, and controlled replay |
 
-The reference's 80% overall and 90% new/changed line coverage thresholds are retained. Numerical timeout, size, and retention defaults in this standard are engineering starting values; validate them against the service contract and deployment capacity.
+Required line coverage is at least 80% overall and 90% for new/changed code. Numerical timeout, size, and retention defaults are engineering starting values; validate them against the service contract and deployment capacity.
 
 ## Topic index
 
@@ -297,7 +298,7 @@ Services own data-dependent validation, authorization of resource access, orches
 - Use projections for read APIs. Fetch only required associations with deliberate joins/entity graphs and inspect query counts for N+1 behavior.
 - Do not paginate a collection fetch join without verifying the database pagination behavior; page IDs first if needed.
 - Execute queries and map required lazy state within the owning transaction. Do not depend on Open Session in View.
-- JPA read-only transactions are optimization hints, not immutable results or an exact equivalent of EF `AsNoTracking`. Use projections and avoid entity mutations in read paths. See [Spring Data transactionality](https://docs.spring.io/spring-data/jpa/reference/jpa/transactions.html).
+- JPA read-only transactions provide optimization hints; they do not make returned entities immutable or enforce a write prohibition. Use projections and avoid entity mutations in read paths. See [Spring Data transactionality](https://docs.spring.io/spring-data/jpa/reference/jpa/transactions.html).
 
 ### Transaction rules
 
@@ -322,7 +323,7 @@ When a downstream read is needed before persistence, perform it outside the tran
 
 Use Spring Data JPA/Hibernate for the default relational persistence model. A service may select JDBC, jOOQ, or another store through an architecture decision; the consistency and boundary rules still apply.
 
-- JPA mapping annotations belong on persistence entities. Keep API DTOs separate. Unlike the C# reference, Java does not require an EF-style fluent mapping layer; use JPA XML only when that is the repository convention.
+- JPA mapping annotations belong on persistence entities. Keep API DTOs separate. Use JPA annotations for mapping by default, or JPA XML when that is the repository convention.
 - Specify schema and table names explicitly for databases supporting schemas. Configure the default Hibernate schema consistently. For databases using a catalog instead, document the equivalent mapping.
 - Define column lengths, nullability, numeric precision/scale, keys, relationships, and optimistic locking. Enforce invariants through migrations, not only Java validation.
 - Use Flyway or Liquibase as the single migration owner. Never use `ddl-auto=create`, `create-drop`, or `update` in production. Prefer `validate` for Hibernate.
@@ -418,7 +419,7 @@ Use stable machine-readable codes. Include safe field paths and messages, never 
 - Create interfaces at meaningful service and external boundaries; do not create an interface for every DTO or trivial helper.
 - Objects requiring proxy advice must be created by Spring. Do not instantiate a transactional service with `new` in production orchestration code.
 
-This deliberately differs from the reference's request-scoped .NET business services: stateless Spring services are normally singleton beans, while transaction state remains bound to the active execution context.
+Stateless Spring services are normally singleton beans. In the blocking MVC/JPA stack, transaction state and persistence contexts are bound to the executing thread through Spring-managed infrastructure.
 
 ---
 
@@ -497,7 +498,7 @@ log.info("Product created: productId={} eventId={}", productId, eventId);
 
 ### Console and rolling files
 
-Retain the reference's console plus rolling-file default for deployments that require service-managed files: roll daily and at 10 MB, retain up to 31 days, and set an explicit total disk cap (starting value 1 GB). Use per-instance paths and central collection. Verify retention on busy days, disk-full behavior, access permissions, and redaction.
+Use console plus rolling-file logging for deployments that require service-managed files: roll daily and at 10 MB, retain up to 31 days, and set an explicit total disk cap (starting value 1 GB). Use per-instance paths and central collection. Verify retention on busy days, disk-full behavior, access permissions, and redaction.
 
 For containers whose platform collects stdout, console-only logging is an allowed documented deployment choice; avoid duplicating each record through both file and stdout collectors. No deployment may rely solely on uncollected ephemeral local files.
 
@@ -542,7 +543,7 @@ A temporary Kafka outage need not prevent a DB-backed API from starting if its c
 
 ## Concurrency and Performance
 
-The default stack is blocking Spring MVC with JPA and `RestClient`. Ordinary synchronous methods are appropriate. Do not wrap each database operation in `CompletableFuture` merely to imitate .NET async methods.
+The default stack is blocking Spring MVC with JPA and `RestClient`. Ordinary synchronous methods are appropriate. Use `CompletableFuture` only for deliberately asynchronous work with an explicit executor and lifecycle; wrapping a blocking database call does not make its I/O non-blocking.
 
 - Do not execute JPA/JDBC or blocking HTTP calls on reactive event-loop threads. A reactive service must explicitly choose its persistence and execution model.
 - Virtual threads are optional after compatibility and load testing. They do not increase database connection capacity or remove the need for concurrency limits.
@@ -551,7 +552,7 @@ The default stack is blocking Spring MVC with JPA and `RestClient`. Ordinary syn
 - `@Async` and transaction proxying are separate concerns. A background task needs its own transaction through a managed service; do not pass managed entities to another thread.
 - Durable work MUST be represented in a database or broker before the request completes. An in-memory future or `@Async` invocation is not durable acceptance.
 - Preserve interrupt status when handling `InterruptedException`, then stop or propagate. Use bounded shutdown waits.
-- Enforce server request deadlines, HTTP transport timeouts, JDBC/query timeouts, and lock waits. Java has no automatic equivalent of ASP.NET request cancellation propagated through every JPA call.
+- Enforce server request deadlines, HTTP transport timeouts, JDBC/query timeouts, and lock waits. Request cancellation does not automatically propagate through every JPA/JDBC operation; configure and verify cancellation and timeout behavior at each I/O boundary.
 - Do not assume client disconnection rolls back an already committed transaction. Idempotency handles safe retries after ambiguous responses.
 - Profile query plans, indexes, allocation, connection usage, serialization, and tail latency before introducing caches or parallelism.
 - Caches MUST define keys, tenant isolation, TTL, invalidation, stale-read tolerance, and size limits. Do not cache authorization decisions across principals accidentally.
@@ -592,7 +593,7 @@ Use explicit URL major versions, such as `/api/v1/products`, for endpoints consu
 - Use parallel deployment and expand/contract database migrations so old and new service instances can coexist.
 - Version Kafka schemas independently of HTTP routes. An API major change does not automatically require a new topic.
 
-This intentionally resolves the reference's conflicting rules about internal API versioning and defaulting to the latest version: independently deployed consumers always get an explicit stable contract here.
+URL major versions make the selected contract visible in routing, logs, and contract tests. Independently deployed consumers MUST receive an explicit stable contract.
 
 ---
 
@@ -664,7 +665,7 @@ Integration tests MUST use the production database engine and Kafka in isolated 
 
 Test transactions through Spring proxies, not only by directly constructing service classes. Include tests that actually commit; a test-managed rollback can hide commit-time failures and after-commit behavior. Use deterministic synchronization for concurrency tests and bounded condition polling instead of arbitrary sleeps.
 
-Retain the reference thresholds: overall line coverage at least 80%; new/changed line coverage at least 90%. Collect with JaCoCo and enforce changed-line coverage with a diff-aware tool. Generated code and other exclusions MUST be explicit and reviewed. Passing percentages do not excuse missing negative-path or race-condition assertions.
+Require overall line coverage of at least 80% and new/changed line coverage of at least 90%. Collect with JaCoCo and enforce changed-line coverage with a diff-aware tool. Generated code and other exclusions MUST be explicit and reviewed. Passing percentages do not excuse missing negative-path or race-condition assertions.
 
 For Maven services, configure unit tests under Surefire and integration tests under Failsafe so `./mvnw -B verify` runs both. For Gradle services, wire the integration-test task into `check` before claiming `./gradlew check` validates it. CI MUST fail on skipped required infrastructure tests; document local prerequisites.
 
@@ -879,7 +880,7 @@ Every DLT/quarantine requires an owner, alert, retention, diagnostic procedure, 
 
 ## Service Security
 
-This Java standard adds an explicit security baseline because the requested service exposes endpoints to other services. The source standard's instruction not to add access-control middleware is not carried over as an assumption that internal services are trusted.
+Java services exposing endpoints to other services MUST enforce an explicit authentication and authorization boundary. Apply the same identity and access rules to internal callers.
 
 - Authenticate service callers using the organization's standard, typically OAuth2 resource-server validation or mTLS with a trusted identity mapping. Network location alone is insufficient.
 - For JWTs, validate signature, trusted issuer, intended audience, expiry and other applicable time claims, then authorize required scopes. Audience validation MUST be configured and tested, not assumed from an issuer URL. Spring provides configurable validation in its [JWT resource server documentation](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).

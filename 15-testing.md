@@ -18,6 +18,6 @@ Integration tests MUST use the production database engine and Kafka in isolated 
 
 Test transactions through Spring proxies, not only by directly constructing service classes. Include tests that actually commit; a test-managed rollback can hide commit-time failures and after-commit behavior. Use deterministic synchronization for concurrency tests and bounded condition polling instead of arbitrary sleeps.
 
-Retain the reference thresholds: overall line coverage at least 80%; new/changed line coverage at least 90%. Collect with JaCoCo and enforce changed-line coverage with a diff-aware tool. Generated code and other exclusions MUST be explicit and reviewed. Passing percentages do not excuse missing negative-path or race-condition assertions.
+Require overall line coverage of at least 80% and new/changed line coverage of at least 90%. Collect with JaCoCo and enforce changed-line coverage with a diff-aware tool. Generated code and other exclusions MUST be explicit and reviewed. Passing percentages do not excuse missing negative-path or race-condition assertions.
 
 For Maven services, configure unit tests under Surefire and integration tests under Failsafe so `./mvnw -B verify` runs both. For Gradle services, wire the integration-test task into `check` before claiming `./gradlew check` validates it. CI MUST fail on skipped required infrastructure tests; document local prerequisites.

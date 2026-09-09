@@ -25,7 +25,7 @@ Services own data-dependent validation, authorization of resource access, orches
 - Use projections for read APIs. Fetch only required associations with deliberate joins/entity graphs and inspect query counts for N+1 behavior.
 - Do not paginate a collection fetch join without verifying the database pagination behavior; page IDs first if needed.
 - Execute queries and map required lazy state within the owning transaction. Do not depend on Open Session in View.
-- JPA read-only transactions are optimization hints, not immutable results or an exact equivalent of EF `AsNoTracking`. Use projections and avoid entity mutations in read paths. See [Spring Data transactionality](https://docs.spring.io/spring-data/jpa/reference/jpa/transactions.html).
+- JPA read-only transactions provide optimization hints; they do not make returned entities immutable or enforce a write prohibition. Use projections and avoid entity mutations in read paths. See [Spring Data transactionality](https://docs.spring.io/spring-data/jpa/reference/jpa/transactions.html).
 
 ## Transaction rules
 

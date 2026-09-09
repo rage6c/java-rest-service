@@ -10,7 +10,7 @@ def render():
     readme = (ROOT / 'README.md').read_text(encoding='utf-8')
     intro = readme.split('## Reading options\n', 1)[0]
     index = '## Topic index\n' + readme.split('## Topic index\n', 1)[1].split(
-        '\n## Reference provenance', 1
+        '\n## Documentation sources', 1
     )[0]
     parts = [intro, index]
     for topic in sorted(ROOT.glob('[0-9][0-9]-*.md')):

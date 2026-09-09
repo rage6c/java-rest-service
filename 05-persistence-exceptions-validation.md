@@ -4,7 +4,7 @@
 
 Use Spring Data JPA/Hibernate for the default relational persistence model. A service may select JDBC, jOOQ, or another store through an architecture decision; the consistency and boundary rules still apply.
 
-- JPA mapping annotations belong on persistence entities. Keep API DTOs separate. Unlike the C# reference, Java does not require an EF-style fluent mapping layer; use JPA XML only when that is the repository convention.
+- JPA mapping annotations belong on persistence entities. Keep API DTOs separate. Use JPA annotations for mapping by default, or JPA XML when that is the repository convention.
 - Specify schema and table names explicitly for databases supporting schemas. Configure the default Hibernate schema consistently. For databases using a catalog instead, document the equivalent mapping.
 - Define column lengths, nullability, numeric precision/scale, keys, relationships, and optimistic locking. Enforce invariants through migrations, not only Java validation.
 - Use Flyway or Liquibase as the single migration owner. Never use `ddl-auto=create`, `create-drop`, or `update` in production. Prefer `validate` for Hibernate.

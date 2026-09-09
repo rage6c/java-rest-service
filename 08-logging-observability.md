@@ -16,7 +16,7 @@ log.info("Product created: productId={} eventId={}", productId, eventId);
 
 ## Console and rolling files
 
-Retain the reference's console plus rolling-file default for deployments that require service-managed files: roll daily and at 10 MB, retain up to 31 days, and set an explicit total disk cap (starting value 1 GB). Use per-instance paths and central collection. Verify retention on busy days, disk-full behavior, access permissions, and redaction.
+Use console plus rolling-file logging for deployments that require service-managed files: roll daily and at 10 MB, retain up to 31 days, and set an explicit total disk cap (starting value 1 GB). Use per-instance paths and central collection. Verify retention on busy days, disk-full behavior, access permissions, and redaction.
 
 For containers whose platform collects stdout, console-only logging is an allowed documented deployment choice; avoid duplicating each record through both file and stdout collectors. No deployment may rely solely on uncollected ephemeral local files.
 

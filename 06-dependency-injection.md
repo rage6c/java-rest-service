@@ -10,4 +10,4 @@
 - Create interfaces at meaningful service and external boundaries; do not create an interface for every DTO or trivial helper.
 - Objects requiring proxy advice must be created by Spring. Do not instantiate a transactional service with `new` in production orchestration code.
 
-This deliberately differs from the reference's request-scoped .NET business services: stateless Spring services are normally singleton beans, while transaction state remains bound to the active execution context.
+Stateless Spring services are normally singleton beans. In the blocking MVC/JPA stack, transaction state and persistence contexts are bound to the executing thread through Spring-managed infrastructure.

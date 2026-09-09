@@ -4,9 +4,11 @@ Date: 2026-09-09
 Reviewer: Claude Code
 Scope: README.md, `JAVA-SERVICE-CODING-STANDARD.md` (consolidated), topic files `01`–`20`, `scripts/build-standard.py`
 
+Editorial note: Cross-platform comparisons and provenance commentary have been removed to keep these notes focused on Java. Findings and verification below describe the original review snapshot.
+
 ## What this is
 
-A Java/Spring adaptation of a C#/.NET REST coding standard — 20 topic documents plus a
+A Java/Spring REST service coding standard — 20 topic documents plus a
 generator (`scripts/build-standard.py`) that assembles them into the consolidated
 `JAVA-SERVICE-CODING-STANDARD.md` (971 lines). Scope is honest and tightly drawn:
 service-to-service REST, relational CRUD, downstream calls, and Kafka with a
@@ -29,7 +31,7 @@ transactional outbox.
   correctly ("`acks=all` acknowledges current in-sync replicas; durability depends
   on broker config"). The Kafka 4.1 defaults (idempotence on, `retries = MAX`)
   make the example settings redundant-but-explicit rather than wrong.
-  Read-only-transaction ≠ `AsNoTracking` (04), the pre-flush `@Version` warning
+  Read-only transaction semantics (04), the pre-flush `@Version` warning
   (18), and "OSIV is not a design basis" are all precisely right.
 - **Sophisticated outbox/relay treatment** (18): `FOR UPDATE SKIP LOCKED` claims,
   persisted claim tokens, conditional completion vs. stale workers, the
@@ -41,7 +43,7 @@ transactional outbox.
   controller advice *and* security-filter handlers.
 - **Good governance discipline**: MUST/SHOULD/MAY defined; exceptions require
   recorded decisions; no framework version pinning asserted (wise, given Boot 4.x
-  is current); C# provenance disclosed; code blocks labeled as excerpts or
+  is current); code blocks labeled as excerpts or
   pseudocode so they are not mistaken for a compile-checked reference service.
 
 ## Findings
@@ -89,11 +91,10 @@ versions" stance.
 
 ### 5. Nit: versioning rationale worth one line
 
-Topic 12 picks URL major versioning, which is defensible, but the reference's
-"conflicting internal API rules" it resolves may actually have favored
-header/negotiated versioning for internal APIs. One sentence on *why* URL-major
-was chosen over the common internal alternative (e.g., pragmatic debuggability,
-contract-test tooling) would preempt bikeshedding during adoption.
+Topic 12 picks URL major versioning. One sentence on why URL-major was chosen
+over header/negotiated versioning for internal APIs (e.g., visible routing,
+debuggability, and contract-test tooling) would clarify the decision for Java
+service developers.
 
 ### 6. Minor gaps worth considering (optional, not defects)
 

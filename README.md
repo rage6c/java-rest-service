@@ -6,7 +6,7 @@ Date: 2026-09-09
 
 Scope: Java REST services exposing service-to-service endpoints, performing relational database CRUD, calling downstream services, and publishing Kafka events.
 
-This standard adapts the structure and engineering intent of `/Users/rage6c/Documents/docs/rest-api-coding-standard/`. The source is C#/.NET; this is a Java-specific standard, not a literal API-name translation. Spring and Kafka mechanics were checked against official documentation linked in the relevant topics.
+This standard is for Java developers building and reviewing Spring Boot services. It defines implementation patterns for REST endpoints, relational persistence, downstream integrations, and Kafka messaging. Official documentation is linked in the relevant topics.
 
 ## Baseline and rule strength
 
@@ -26,21 +26,22 @@ Code blocks are focused excerpts or explicitly labeled pseudocode. Imports and s
 - One local transaction for DB change plus outbox event; asynchronous at-least-once Kafka delivery with stable event IDs.
 - Explicit API/event contracts, centralized problem responses, tracing, operational recovery, and meaningful integration tests.
 
-## Deliberate adaptations from the reference
+## Java technology choices
 
-| Reference approach | Java standard decision |
+| Concern | Standard |
 | --- | --- |
-| EF Core Fluent API with annotation-free entities | Explicit JPA mapping annotations on persistence-only entities; named schema/table and migrations retained |
-| `AsNoTracking` and SQL-translated LINQ | Read-only transactions/projections and database-side repository queries; Java Streams are not a SQL query provider |
-| Request-scoped business services | Stateless Spring singleton beans with transaction-bound persistence contexts |
-| `Task` and `CancellationToken` throughout | Consistent blocking MVC/JPA by default, bounded I/O and explicit cancellation limits |
-| Serilog console and rolling files | SLF4J/Logback; retain rolling-file policy with a documented stdout-only container option |
-| xUnit/Moq and NuGet | JUnit Jupiter/Mockito, real-engine integration tests, Maven/Gradle and JVM dependency scans |
-| Conflicting internal/unversioned API rules | Explicit stable URL major version for independently deployed callers |
-| No new access-control middleware | Explicit service authentication/authorization boundary for the requested exposed endpoints |
-| No dedicated Kafka consistency chapter | Durable outbox, producer acknowledgments, duplicate handling, ordering, quarantine and replay |
+| Persistence | JPA/Hibernate entities with explicit table/schema mapping and versioned migrations |
+| Queries | Spring Data repositories, database-side filtering/projection, and read-only transactions |
+| Dependency injection | Constructor injection and stateless Spring singleton beans |
+| Execution model | Blocking Spring MVC/JPA with bounded I/O and explicit timeout/cancellation handling |
+| Logging | SLF4J/Logback with central collection and deployment-appropriate appenders |
+| Testing | JUnit Jupiter/Mockito and integration tests against the production database engine and Kafka |
+| Build and dependencies | Maven or Gradle, managed versions, static analysis, and JVM dependency scans |
+| API contracts | Explicit URL major versions for independently deployed callers |
+| Security | Service authentication, scope checks, and resource/tenant authorization |
+| Messaging | Transactional outbox, acknowledged publication, duplicate handling, and controlled replay |
 
-The reference's 80% overall and 90% new/changed line coverage thresholds are retained. Numerical timeout, size, and retention defaults in this standard are engineering starting values; validate them against the service contract and deployment capacity.
+Required line coverage is at least 80% overall and 90% for new/changed code. Numerical timeout, size, and retention defaults are engineering starting values; validate them against the service contract and deployment capacity.
 
 ## Reading options
 
@@ -71,9 +72,9 @@ Read [JAVA-SERVICE-CODING-STANDARD.md](JAVA-SERVICE-CODING-STANDARD.md) for the 
 | Service Security | [19-security.md](19-security.md) |
 | End-to-End Reference Flow | [20-end-to-end-flow.md](20-end-to-end-flow.md) |
 
-## Reference provenance
+## Documentation sources
 
-The local source folder's README and topics 01–17 informed the structure, rules, examples, and adaptation table. Its `SKILL.md` describes how to apply the C# standard; this deliverable is a coding standard and does not install or modify a Codex skill. Official documentation links explain framework behavior; this document's MUST/SHOULD rules are the proposed Java service policy.
+Topic files link to official Spring Framework, Spring Boot, Spring Data, Spring Security, Spring for Apache Kafka, Apache Kafka, and Debezium documentation for framework behavior. The MUST/SHOULD rules define this standard's implementation policy for Java services.
 
 ## Maintaining the consolidated copy
 

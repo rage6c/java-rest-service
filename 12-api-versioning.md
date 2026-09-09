@@ -11,4 +11,4 @@ Use explicit URL major versions, such as `/api/v1/products`, for endpoints consu
 - Use parallel deployment and expand/contract database migrations so old and new service instances can coexist.
 - Version Kafka schemas independently of HTTP routes. An API major change does not automatically require a new topic.
 
-This intentionally resolves the reference's conflicting rules about internal API versioning and defaulting to the latest version: independently deployed consumers always get an explicit stable contract here.
+URL major versions make the selected contract visible in routing, logs, and contract tests. Independently deployed consumers MUST receive an explicit stable contract.

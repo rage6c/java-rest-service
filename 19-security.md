@@ -1,6 +1,6 @@
 # Service Security
 
-This Java standard adds an explicit security baseline because the requested service exposes endpoints to other services. The source standard's instruction not to add access-control middleware is not carried over as an assumption that internal services are trusted.
+Java services exposing endpoints to other services MUST enforce an explicit authentication and authorization boundary. Apply the same identity and access rules to internal callers.
 
 - Authenticate service callers using the organization's standard, typically OAuth2 resource-server validation or mTLS with a trusted identity mapping. Network location alone is insufficient.
 - For JWTs, validate signature, trusted issuer, intended audience, expiry and other applicable time claims, then authorize required scopes. Audience validation MUST be configured and tested, not assumed from an issuer URL. Spring provides configurable validation in its [JWT resource server documentation](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
