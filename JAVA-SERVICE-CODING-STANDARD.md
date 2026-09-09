@@ -914,9 +914,9 @@ sequenceDiagram
     participant K as Kafka topic
     C->>API: POST /api/v1/products
     API->>S: Validated request + trusted caller
-    S->>D: Optional required reference lookup (bounded)
+    S->>D: Reference lookup if needed (bounded)
     D-->>S: Validated reference data
-    S->>DB: BEGIN; validate local invariants
+    S->>DB: BEGIN and validate local invariants
     S->>DB: Write product + immutable outbox event
     S->>DB: COMMIT
     S-->>API: Product response
