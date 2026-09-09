@@ -47,6 +47,17 @@ Required line coverage is at least 80% overall and 90% for new/changed code. Num
 
 Read [JAVA-SERVICE-CODING-STANDARD.md](JAVA-SERVICE-CODING-STANDARD.md) for the complete consolidated standard, or use the topic files below. Start with the [end-to-end flow](20-end-to-end-flow.md) and [merge checklist](17-review-checklist.md) for an implementation overview.
 
+### AI skill entry point
+
+[SKILL.md](SKILL.md) packages this standard as `java-rest-service-skill` with task routing and implementation/review instructions. Keep the whole directory together so its topic links and generator remain available. Once installed in your agent's skill directory, invoke it with:
+
+```text
+Use $java-rest-service-skill to implement a product CRUD endpoint with a Kafka event.
+Use $java-rest-service-skill to review this service's transaction and retry behavior.
+```
+
+For use directly from a checkout, ask the agent to read this repository's `SKILL.md` and apply it to the target service. Creating the entry point does not install the skill globally.
+
 ## Topic index
 
 | Topic | File |

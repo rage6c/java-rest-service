@@ -113,3 +113,8 @@ service developers.
 2. Optionally apply the one-line fixes in Findings 4–5.
 3. Optionally: CI check for consolidated-doc drift; fill the minor gaps in
    Finding 6.
+
+## Resolution update — findings 1 and 6
+
+- **1 resolved:** Added [SKILL.md](../SKILL.md) with discovery metadata, implementation/review workflow, focused topic routing, and [README invocation examples](../README.md).
+- **6 resolved:** [Endpoint guidance](../03-controllers-requests-responses.md) now specifies JSON Merge Patch (RFC 7396, replacing the review's obsolete RFC 7386 citation) and JSON Patch (RFC 6902), their media types and semantics, concrete per-operation retention/expiry requirements with an illustrative duration, and 200-with-DTO versus 204-without-body response rules. The consolidated standard is regenerated from those rules.
