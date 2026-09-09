@@ -1,6 +1,8 @@
 # Merge Review Checklist
 
-All applicable MUST rules are merge requirements. Mark an item not applicable only with a reason. An exception needs a recorded decision, owner, and follow-up where temporary.
+For a change review, applicable MUST rules for new or changed behavior and its required supporting code are merge requirements. Assess existing behavior that the change depends on or worsens; report unrelated pre-existing gaps separately instead of requiring an unrelated cleanup. For a whole-service review, assess all applicable capabilities and distinguish defects from conformance gaps and optional improvements.
+
+Mark an item not applicable only with a reason. An exception needs a recorded decision, owner, and follow-up where temporary. Deferring an unrelated gap does not waive the rule or establish whole-service conformance. Use the conflict and triage guidance in [SKILL.md](SKILL.md) when applying this checklist through the skill.
 
 ## Architecture and endpoints
 

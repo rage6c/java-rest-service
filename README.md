@@ -49,14 +49,16 @@ Read [JAVA-SERVICE-CODING-STANDARD.md](JAVA-SERVICE-CODING-STANDARD.md) for the 
 
 ### AI skill entry point
 
-[SKILL.md](SKILL.md) packages this standard as `java-rest-service-skill` with task routing and implementation/review instructions. Keep the whole directory together so its topic links and generator remain available. Once installed in your agent's skill directory, invoke it with:
+[SKILL.md](SKILL.md) packages this standard as `java-rest-service-skill` for scoped implementation changes in existing services and for change/service reviews. It supplies separate workflows, conflict handling, and finding triage. The standard also supports new-service design, but the skill does not provide a tested greenfield scaffold or production reference relay.
+
+Keep the whole directory together so topic links and the generator remain available. Select the installed skill using your agent's supported invocation mechanism, or provide the path to this checkout's `SKILL.md`. Product-neutral request examples:
 
 ```text
-Use $java-rest-service-skill to implement a product CRUD endpoint with a Kafka event.
-Use $java-rest-service-skill to review this service's transaction and retry behavior.
+Read this repository's SKILL.md and add a product CRUD endpoint with a Kafka event to the existing service.
+Read this repository's SKILL.md and review the target service's transaction and retry behavior.
 ```
 
-For use directly from a checkout, ask the agent to read this repository's `SKILL.md` and apply it to the target service. Creating the entry point does not install the skill globally.
+This skill supplies Java REST-specific rules and can complement a general review workflow. It does not override user instructions or target-repository requirements. Creating the entry point does not install the skill globally.
 
 ## Topic index
 

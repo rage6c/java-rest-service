@@ -11,7 +11,7 @@ Use `@RestController`, an explicit versioned resource path, constructor injectio
 | Read | `GET /api/v1/products/{id}` | 200 | Missing resource returns 404 |
 | Replace | `PUT /api/v1/products/{id}` | 200 with DTO; 204 without body | Complete mutable representation; no implicit create |
 | Partial update | `PATCH /api/v1/products/{id}` | 200 with DTO; 204 without body | Explicit patch media type and null/absent semantics |
-| Delete | `DELETE /api/v1/products/{id}` | 204 | Missing resource returns 404 under this standard |
+| Delete | `DELETE /api/v1/products/{id}` | 204 | Missing resource returns 404 |
 | Start asynchronous workflow | `POST /api/v1/jobs` | 202 | Persisted acceptance and a status resource in `Location` |
 
 A repeated DELETE returning 404 can still be idempotent: the resource remains absent. Choose and document one behavior per API. GET MUST have no business side effects. Use 405 for unsupported methods and 415 for unsupported request media types.

@@ -198,7 +198,7 @@ Use `@RestController`, an explicit versioned resource path, constructor injectio
 | Read | `GET /api/v1/products/{id}` | 200 | Missing resource returns 404 |
 | Replace | `PUT /api/v1/products/{id}` | 200 with DTO; 204 without body | Complete mutable representation; no implicit create |
 | Partial update | `PATCH /api/v1/products/{id}` | 200 with DTO; 204 without body | Explicit patch media type and null/absent semantics |
-| Delete | `DELETE /api/v1/products/{id}` | 204 | Missing resource returns 404 under this standard |
+| Delete | `DELETE /api/v1/products/{id}` | 204 | Missing resource returns 404 |
 | Start asynchronous workflow | `POST /api/v1/jobs` | 202 | Persisted acceptance and a status resource in `Location` |
 
 A repeated DELETE returning 404 can still be idempotent: the resource remains absent. Choose and document one behavior per API. GET MUST have no business side effects. Use 405 for unsupported methods and 415 for unsupported request media types.
@@ -728,7 +728,9 @@ A dependency tree is not a vulnerability scan. Declare scanner/plugin versions i
 
 ## Merge Review Checklist
 
-All applicable MUST rules are merge requirements. Mark an item not applicable only with a reason. An exception needs a recorded decision, owner, and follow-up where temporary.
+For a change review, applicable MUST rules for new or changed behavior and its required supporting code are merge requirements. Assess existing behavior that the change depends on or worsens; report unrelated pre-existing gaps separately instead of requiring an unrelated cleanup. For a whole-service review, assess all applicable capabilities and distinguish defects from conformance gaps and optional improvements.
+
+Mark an item not applicable only with a reason. An exception needs a recorded decision, owner, and follow-up where temporary. Deferring an unrelated gap does not waive the rule or establish whole-service conformance. Use the conflict and triage guidance in [SKILL.md](SKILL.md) when applying this checklist through the skill.
 
 ### Architecture and endpoints
 
