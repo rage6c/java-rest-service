@@ -1,0 +1,55 @@
+# Java build output
+target/
+build/
+out/
+.gradle/
+*.class
+*.jar
+*.war
+*.ear
+
+# Keep build wrappers versioned
+!gradle/wrapper/gradle-wrapper.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE and editor metadata
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+*.jks
+*.keystore
+*.p12
+*.pfx
+
+# Logs and runtime diagnostics
+logs/
+*.log
+*.hprof
+hs_err_pid*
+replay_pid*
+
+# Python generator caches
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Operating-system metadata
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
